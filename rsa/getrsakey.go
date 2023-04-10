@@ -1,13 +1,14 @@
 package rsa
 
 import (
-	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
 
-	"github.com/wumansgy/goEncrypt"
+	"github.com/3JoB/ulib/hex"
+	rand "lukechampine.com/frand"
+
+	"github.com/3JoB/ges"
 )
 
 /*
@@ -26,9 +27,17 @@ type RsaKey struct {
 	PublicKey  string
 }
 
+var RsaBits map[int]bool = map[int]bool{
+	1024: true,
+	2048: true,
+	3072: true,
+	4096: true,
+	8192: true,
+}
+
 func GenerateRsaKeyHex(bits int) (RsaKey, error) {
-	if bits != 1024 && bits != 2048 {
-		return RsaKey{}, goEncrypt.ErrRsaBits
+	if !RsaBits[bits] {
+		return RsaKey{}, ges.ErrRsaBits
 	}
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
@@ -41,8 +50,8 @@ func GenerateRsaKeyHex(bits int) (RsaKey, error) {
 }
 
 func GenerateRsaKeyBase64(bits int) (RsaKey, error) {
-	if bits != 1024 && bits != 2048 {
-		return RsaKey{}, goEncrypt.ErrRsaBits
+	if !RsaBits[bits] {
+		return RsaKey{}, ges.ErrRsaBits
 	}
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {

@@ -2,15 +2,15 @@ package rsa
 
 import (
 	"crypto"
-	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/crypt/hash"
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt/hash"
+	rand "lukechampine.com/frand"
 )
 
 func rsaSign(msg, priKey []byte) (sign []byte, err error) {
@@ -25,15 +25,14 @@ func rsaSign(msg, priKey []byte) (sign []byte, err error) {
 		}
 	}()
 	privateKey, err := x509.ParsePKCS1PrivateKey(priKey)
-	hashed := hash.Sha256(msg)
-	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	sign, err = rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA3_512, hash.SHA3_512(msg).Sum(nil))
 	if err != nil {
 		return nil, err
 	}
 	return sign, nil
 }
 
-func rsaVerifySign(msg []byte, sign []byte, pubKey []byte) bool {
+func rsaVerifySign(msg, sign, pubKey []byte) bool {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -48,8 +47,8 @@ func rsaVerifySign(msg []byte, sign []byte, pubKey []byte) bool {
 	if err != nil {
 		return false
 	}
-	hashed := hash.Sha256(msg)
-	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, sign)
+	hashed := hash.SHA3_512(msg).Sum(nil)
+	result := rsa.VerifyPKCS1v15(publicKey, crypto.SHA3_512, hashed, sign)
 	return result == nil
 }
 

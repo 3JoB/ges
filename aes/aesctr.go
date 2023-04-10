@@ -4,33 +4,35 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
+	"github.com/3JoB/unsafeConvert"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt"
+
+	"github.com/3JoB/ges"
 )
 
 /*
-	AES CTR mode encryption and decryption
+AES CTR mode encryption and decryption
 */
 func AesCtrEncrypt(plainText, secretKey, ivAes []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
 	var iv []byte
-	if len(ivAes) != 0 {
-		if len(ivAes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvAes
-		} else {
-			iv = ivAes
+	ivs := len(ivAes)
+	if ivs != 0 {
+		if ivs != block.BlockSize() {
+			return nil, ges.ErrIvAes
 		}
+		iv = ivAes
 	} else {
-		iv = []byte(goEncrypt.Ivaes)
+		iv = unsafeConvert.BytesReflect(ges.Ivaes)
 	}
 	stream := cipher.NewCTR(block, iv)
 
@@ -42,7 +44,7 @@ func AesCtrEncrypt(plainText, secretKey, ivAes []byte) (cipherText []byte, err e
 
 func AesCtrDecrypt(cipherText, secretKey, ivAes []byte) (plainText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
@@ -63,12 +65,11 @@ func AesCtrDecrypt(cipherText, secretKey, ivAes []byte) (plainText []byte, err e
 	var iv []byte
 	if len(ivAes) != 0 {
 		if len(ivAes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvAes
-		} else {
-			iv = ivAes
+			return nil, ges.ErrIvAes
 		}
+		iv = ivAes
 	} else {
-		iv = []byte(goEncrypt.Ivaes)
+		iv = []byte(ges.Ivaes)
 	}
 	stream := cipher.NewCTR(block, iv)
 

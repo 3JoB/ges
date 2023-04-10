@@ -17,7 +17,6 @@ var (
 )
 
 func TestAesCbc(t *testing.T) {
-
 	cipherBytes, err := AesCbcEncrypt([]byte(plaintext), []byte(key16), nil)
 	assert.Nil(t, err)
 	text, err := AesCbcDecrypt(cipherBytes, []byte(key16), nil)

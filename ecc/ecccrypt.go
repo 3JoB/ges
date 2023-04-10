@@ -5,9 +5,9 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -38,7 +38,6 @@ func eccEncrypt(plainText, pubKey []byte) (cipherText []byte, err error) {
 	publicKey := ImportECDSAPublic(publicKey1)
 	cipherText, err = Encrypt(rand.Reader, publicKey, plainText, nil, nil)
 	return cipherText, err
-
 }
 
 // The private key and plaintext are passed in for decryption
@@ -79,7 +78,6 @@ func EccEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText
 	return base64.StdEncoding.EncodeToString(cipherBytes), nil
 }
 
-//
 func EccDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
 	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {

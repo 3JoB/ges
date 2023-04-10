@@ -4,17 +4,19 @@ import (
 	"crypto/cipher"
 	"crypto/des"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt"
+
+	"github.com/3JoB/ges"
 )
 
-/**
-1. Group plaintext
-	DES CBC mode encryption and decryption, is an 8-byte block encryption
-	If the group is not an integer multiple of 8, you need to consider completing the 8 bits2.
+/*
+*
+ 1. Group plaintext
+    DES CBC mode encryption and decryption, is an 8-byte block encryption
+    If the group is not an integer multiple of 8, you need to consider completing the 8 bits2.
 */
 func init() {
 	log.SetFormatter(&log.JSONFormatter{})
@@ -23,23 +25,22 @@ func init() {
 
 func DesCbcEncrypt(plainText, secretKey, ivDes []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 8 {
-		return nil, goEncrypt.ErrKeyLengtheEight
+		return nil, ges.ErrKeyLengtheEight
 	}
 	block, err := des.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
-	paddingText := goEncrypt.PKCS5Padding(plainText, block.BlockSize())
+	paddingText := ges.PKCS5Padding(plainText, block.BlockSize())
 
 	var iv []byte
 	if len(ivDes) != 0 {
 		if len(ivDes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvDes
-		} else {
-			iv = ivDes
+			return nil, ges.ErrIvDes
 		}
+		iv = ivDes
 	} else {
-		iv = []byte(goEncrypt.Ivdes)
+		iv = []byte(ges.Ivdes)
 	} // Initialization vector
 	blockMode := cipher.NewCBCEncrypter(block, iv)
 
@@ -50,7 +51,7 @@ func DesCbcEncrypt(plainText, secretKey, ivDes []byte) (cipherText []byte, err e
 
 func DesCbcDecrypt(cipherText, secretKey, ivDes []byte) (plainText []byte, err error) {
 	if len(secretKey) != 8 {
-		return nil, goEncrypt.ErrKeyLengtheEight
+		return nil, ges.ErrKeyLengtheEight
 	}
 	block, err := des.NewCipher(secretKey)
 	if err != nil {
@@ -71,19 +72,18 @@ func DesCbcDecrypt(cipherText, secretKey, ivDes []byte) (plainText []byte, err e
 	var iv []byte
 	if len(ivDes) != 0 {
 		if len(ivDes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvDes
-		} else {
-			iv = ivDes
+			return nil, ges.ErrIvDes
 		}
+		iv = ivDes
 	} else {
-		iv = []byte(goEncrypt.Ivdes)
+		iv = []byte(ges.Ivdes)
 	} // Initialization vector
 	blockMode := cipher.NewCBCDecrypter(block, iv)
 
 	plainText = make([]byte, len(cipherText))
 	blockMode.CryptBlocks(plainText, cipherText)
 
-	unPaddingText, err := goEncrypt.PKCS5UnPadding(plainText, block.BlockSize())
+	unPaddingText, err := ges.PKCS5UnPadding(plainText, block.BlockSize())
 	if err != nil {
 		return nil, err
 	}

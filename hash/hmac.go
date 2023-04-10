@@ -1,29 +1,29 @@
+// hmac package
+//
+// Deprecated: It is no longer recommended to use this package.
+// It is suggested to use the github.com/3JoB/ulib/crypt/hash
+// series of packages, such as github.com/3JoB/ulib/crypt/hash
+// and github.com/3JoB/ulib/crypt/hash/hmac, because it provides
+// a more comprehensive method of wrapping.
 package hash
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"crypto/sha512"
-	"encoding/hex"
-	"io"
+	"github.com/3JoB/ulib/crypt/hash"
+	"github.com/3JoB/ulib/crypt/hash/hmac"
 )
 
-func HmacSha256(key []byte, body string) []byte {
-	h := hmac.New(sha256.New, key)
-	io.WriteString(h, body)
-	return h.Sum(nil)
+func HmacSha256(key, body []byte) []byte {
+	return hmac.SHA256(body, key).Sum(nil)
 }
 
-func HmacSha256Hex(key []byte, body string) string {
-	return hex.EncodeToString(HmacSha256(key, body))
+func HmacSha256Hex(key, body []byte) string {
+	return hash.HexEncoding(hmac.SHA256(body, key))
 }
 
-func HmacSha512(key []byte, body string) []byte {
-	h := hmac.New(sha512.New, key)
-	io.WriteString(h, body)
-	return h.Sum(nil)
+func HmacSha512(key, body []byte) []byte {
+	return hmac.SHA512(body, key).Sum(nil)
 }
 
-func HmacSha512Hex(key []byte, body string) string {
-	return hex.EncodeToString(HmacSha512(key, body))
+func HmacSha512Hex(key, body []byte) string {
+	return hash.HexEncoding(hmac.SHA512(body, key))
 }

@@ -1,8 +1,9 @@
 package aes
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAesCtr(t *testing.T) {

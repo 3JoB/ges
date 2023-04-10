@@ -130,7 +130,6 @@ func TestRsaEncryptHex(t *testing.T) {
 	plainText, err = RsaDecryptByHex(hexCipherText, hexPriKey2048)
 	assert.Nil(t, err)
 	assert.Equal(t, string(plainText), msg)
-
 }
 
 func TestRsaSignBase64(t *testing.T) {
@@ -170,7 +169,6 @@ func TestRsaSignBase64(t *testing.T) {
 	assert.Equal(t, res, false)
 	res = RsaVerifySignBase64([]byte(msg), base64Sign2048, base64Key2048.PrivateKey)
 	assert.Equal(t, res, false)
-
 }
 
 func TestRsaSignHex(t *testing.T) {
@@ -216,5 +214,4 @@ func TestRsaSignHex(t *testing.T) {
 	assert.Equal(t, res, false)
 	res = RsaVerifySignHex([]byte(msg), hexSign2048, hexKey2048.PrivateKey)
 	assert.Equal(t, res, false)
-
 }

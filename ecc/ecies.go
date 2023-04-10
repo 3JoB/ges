@@ -39,6 +39,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"crypto/subtle"
+	"errors"
 	"fmt"
 	"hash"
 	"io"
@@ -46,14 +47,13 @@ import (
 )
 
 var (
-	ErrImport                     = fmt.Errorf("ecies: failed to import key")
-	ErrInvalidCurve               = fmt.Errorf("ecies: invalid elliptic curve")
-	ErrInvalidParams              = fmt.Errorf("ecies: invalid ECIES parameters")
-	ErrInvalidPublicKey           = fmt.Errorf("ecies: invalid public key")
-	ErrSharedKeyIsPointAtInfinity = fmt.Errorf("ecies: shared key is point at infinity")
-	ErrSharedKeyTooBig            = fmt.Errorf("ecies: shared key params are too big")
-	ErrUnsupportedECIESParameters = fmt.Errorf("ecies: unsupported ECIES parameters")
-
+	ErrImport                     = errors.New("ecies: failed to import key")
+	ErrInvalidCurve               = errors.New("ecies: invalid elliptic curve")
+	ErrInvalidParams              = errors.New("ecies: invalid ECIES parameters")
+	ErrInvalidPublicKey           = errors.New("ecies: invalid public key")
+	ErrSharedKeyIsPointAtInfinity = errors.New("ecies: shared key is point at infinity")
+	ErrSharedKeyTooBig            = errors.New("ecies: shared key params are too big")
+	ErrUnsupportedECIESParameters = errors.New("ecies: unsupported ECIES parameters")
 )
 
 // PublicKey is a representation of an elliptic curve public key.
@@ -95,7 +95,7 @@ func (prv *PrivateKey) ExportECDSA() *ecdsa.PrivateKey {
 // Import an ECDSA private key as an ECIES private key.
 func ImportECDSA(prv *ecdsa.PrivateKey) *PrivateKey {
 	pub := ImportECDSAPublic(&prv.PublicKey)
-	return &PrivateKey{*pub, prv.D}
+	return &PrivateKey{PublicKey: *pub, D: prv.D}
 }
 
 // Generate an elliptic curve public / private keypair. If params is nil,
@@ -144,9 +144,9 @@ func (prv *PrivateKey) GenerateShared(pub *PublicKey, skLen, macLen int) (sk []b
 }
 
 var (
-	ErrKeyDataTooLong = fmt.Errorf("ecies: can't supply requested key data")
-	ErrSharedTooLong  = fmt.Errorf("ecies: shared secret is too long")
-	ErrInvalidMessage = fmt.Errorf("ecies: invalid message")
+	ErrKeyDataTooLong = errors.New("ecies: can't supply requested key data")
+	ErrSharedTooLong  = errors.New("ecies: shared secret is too long")
+	ErrInvalidMessage = errors.New("ecies: invalid message")
 )
 
 var (
@@ -371,17 +371,18 @@ func (prv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 	return
 }
 
-
-//以下为从以太坊源码/crypt/ecies/params.go中截取过来
+// 以下为从以太坊源码/crypt/ecies/params.go中截取过来
 func ParamsFromCurve(curve elliptic.Curve) (params *ECIESParams) {
 	return paramsFromCurve[curve]
 }
+
 var paramsFromCurve = map[elliptic.Curve]*ECIESParams{
-	//ethcrypto.S256(): ECIES_AES128_SHA256,
+	// ethcrypto.S256(): ECIES_AES128_SHA256,
 	elliptic.P256(): ECIES_AES128_SHA256,
 	elliptic.P384(): ECIES_AES256_SHA384,
 	elliptic.P521(): ECIES_AES256_SHA512,
 }
+
 var (
 	ECIES_AES128_SHA256 = &ECIESParams{
 		Hash:      sha256.New,
@@ -415,6 +416,7 @@ var (
 		KeyLen:    32,
 	}
 )
+
 type ECIESParams struct {
 	Hash      func() hash.Hash // hash function
 	hashAlgo  crypto.Hash

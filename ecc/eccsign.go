@@ -5,12 +5,13 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
 	"math/big"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt/hash"
+
+	"github.com/3JoB/ges/hash"
 )
 
 func eccSign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) {

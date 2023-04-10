@@ -1,4 +1,4 @@
-package goEncrypt
+package ges
 
 import (
 	"bytes"

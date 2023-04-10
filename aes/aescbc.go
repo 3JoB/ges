@@ -4,11 +4,12 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
-	"github.com/wumansgy/goEncrypt"
+
+	"github.com/3JoB/ges"
 )
 
 /**
@@ -24,23 +25,22 @@ func init() {
 // encrypt
 func AesCbcEncrypt(plainText, secretKey, ivAes []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
-	paddingText := goEncrypt.PKCS5Padding(plainText, block.BlockSize())
+	paddingText := ges.PKCS5Padding(plainText, block.BlockSize())
 
 	var iv []byte
 	if len(ivAes) != 0 {
 		if len(ivAes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvAes
-		} else {
-			iv = ivAes
+			return nil, ges.ErrIvAes
 		}
+		iv = ivAes
 	} else {
-		iv = []byte(goEncrypt.Ivaes)
+		iv = []byte(ges.Ivaes)
 	} // To initialize the vector, it needs to be the same length as block.blocksize
 	blockMode := cipher.NewCBCEncrypter(block, iv)
 	cipherText = make([]byte, len(paddingText))
@@ -51,7 +51,7 @@ func AesCbcEncrypt(plainText, secretKey, ivAes []byte) (cipherText []byte, err e
 // decrypt
 func AesCbcDecrypt(cipherText, secretKey, ivAes []byte) (plainText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
@@ -71,18 +71,17 @@ func AesCbcDecrypt(cipherText, secretKey, ivAes []byte) (plainText []byte, err e
 	var iv []byte
 	if len(ivAes) != 0 {
 		if len(ivAes) != block.BlockSize() {
-			return nil, goEncrypt.ErrIvAes
-		} else {
-			iv = ivAes
+			return nil, ges.ErrIvAes
 		}
+		iv = ivAes
 	} else {
-		iv = []byte(goEncrypt.Ivaes)
+		iv = []byte(ges.Ivaes)
 	}
 	blockMode := cipher.NewCBCDecrypter(block, iv)
 	paddingText := make([]byte, len(cipherText))
 	blockMode.CryptBlocks(paddingText, cipherText)
 
-	plainText, err = goEncrypt.PKCS5UnPadding(paddingText, block.BlockSize())
+	plainText, err = ges.PKCS5UnPadding(paddingText, block.BlockSize())
 	if err != nil {
 		return nil, err
 	}

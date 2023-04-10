@@ -1,8 +1,9 @@
 package ecc
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -37,7 +38,6 @@ func TestEccEncryptBase64(t *testing.T) {
 	assert.NotNil(t, err)
 	_, err = EccDecryptByBase64(cipherText, "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ")
 	assert.NotNil(t, err)
-
 }
 
 func TestEccEncryptHex(t *testing.T) {
@@ -63,7 +63,6 @@ func TestEccEncryptHex(t *testing.T) {
 	assert.NotNil(t, err)
 	_, err = EccDecryptByHex(cipherText, "3059301306072a8648ce3d020106082a8648ce3d03")
 	assert.NotNil(t, err)
-
 }
 
 func TestEccSignBase64(t *testing.T) {

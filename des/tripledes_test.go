@@ -1,8 +1,9 @@
 package des
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -30,7 +31,6 @@ func TestTripleDesCbc(t *testing.T) {
 
 	cipherBytes, err = TripleDesEncrypt([]byte(plaintext), []byte(badiv), []byte(badiv))
 	assert.NotNil(t, err)
-
 }
 
 func TestTripleDesEncryptBase64(t *testing.T) {

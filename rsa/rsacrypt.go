@@ -2,7 +2,6 @@ package rsa
 
 import (
 	"bytes"
-	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
@@ -10,10 +9,11 @@ import (
 	"runtime"
 
 	log "github.com/sirupsen/logrus"
+	rand "lukechampine.com/frand"
 )
 
 /*
-	Operation with rsa encryption
+Operation with rsa encryption
 */
 func init() {
 	log.SetFormatter(&log.JSONFormatter{})
@@ -110,7 +110,6 @@ func RsaEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText
 	return base64.StdEncoding.EncodeToString(cipherBytes), nil
 }
 
-//
 func RsaDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
 	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {

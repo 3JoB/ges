@@ -4,13 +4,14 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"encoding/hex"
 
-	"github.com/wumansgy/goEncrypt"
+	"github.com/3JoB/ulib/hex"
+
+	"github.com/3JoB/ges"
 )
 
 /*
- Ecb is not recommended,use cbc
+Ecb is not recommended,use cbc
 */
 type aesEcb struct {
 	b         cipher.Block
@@ -74,14 +75,14 @@ func (x *ecbDecrypter) CryptBlocks(dst, src []byte) {
 
 func AesEcbEncrypt(plainText, secretKey []byte) (cipherText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
 		return nil, err
 	}
 
-	paddingText := goEncrypt.PKCS5Padding(plainText, block.BlockSize())
+	paddingText := ges.PKCS5Padding(plainText, block.BlockSize())
 
 	crypted := make([]byte, len(paddingText))
 	encrypter := newECBEncrypter(block)
@@ -92,7 +93,7 @@ func AesEcbEncrypt(plainText, secretKey []byte) (cipherText []byte, err error) {
 
 func AesEcbDecrypt(plainText, secretKey []byte) (cipjerText []byte, err error) {
 	if len(secretKey) != 16 && len(secretKey) != 24 && len(secretKey) != 32 {
-		return nil, goEncrypt.ErrKeyLengthSixteen
+		return nil, ges.ErrKeyLengthSixteen
 	}
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
@@ -103,7 +104,7 @@ func AesEcbDecrypt(plainText, secretKey []byte) (cipjerText []byte, err error) {
 	decrypted := make([]byte, len(plainText))
 	ecbDecrypter.CryptBlocks(decrypted, plainText)
 
-	return goEncrypt.PKCS5UnPadding(decrypted, ecbDecrypter.BlockSize())
+	return ges.PKCS5UnPadding(decrypted, ecbDecrypter.BlockSize())
 }
 
 func AesEcbEncryptBase64(plainText, key []byte) (cipherTextBase64 string, err error) {

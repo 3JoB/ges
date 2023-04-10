@@ -15,7 +15,6 @@ var (
 )
 
 func TestDesCbc(t *testing.T) {
-
 	cipherBytes, err := DesCbcEncrypt([]byte(plaintext), []byte(key8), nil)
 	assert.Nil(t, err)
 	text, err := DesCbcDecrypt(cipherBytes, []byte(key8), nil)
@@ -33,7 +32,6 @@ func TestDesCbc(t *testing.T) {
 	text, err = DesCbcDecrypt(cipherBytes, []byte(key8), []byte(goodiv))
 	assert.Nil(t, err)
 	assert.Equal(t, string(text), plaintext)
-
 }
 
 func TestDesEncryptBase64(t *testing.T) {

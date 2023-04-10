@@ -6,7 +6,8 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
+
+	"github.com/3JoB/ulib/hex"
 )
 
 type EccKey struct {
