@@ -36,14 +36,14 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/hmac"
-	"crypto/sha256"
-	"crypto/sha512"
 	"crypto/subtle"
 	"errors"
 	"fmt"
 	"hash"
 	"io"
 	"math/big"
+
+	"golang.org/x/crypto/sha3"
 )
 
 var (
@@ -385,32 +385,32 @@ var paramsFromCurve = map[elliptic.Curve]*ECIESParams{
 
 var (
 	ECIES_AES128_SHA256 = &ECIESParams{
-		Hash:      sha256.New,
-		hashAlgo:  crypto.SHA256,
+		Hash:      sha3.New256,
+		hashAlgo:  crypto.SHA3_256,
 		Cipher:    aes.NewCipher,
 		BlockSize: aes.BlockSize,
 		KeyLen:    16,
 	}
 
 	ECIES_AES256_SHA256 = &ECIESParams{
-		Hash:      sha256.New,
-		hashAlgo:  crypto.SHA256,
+		Hash:      sha3.New256,
+		hashAlgo:  crypto.SHA3_256,
 		Cipher:    aes.NewCipher,
 		BlockSize: aes.BlockSize,
 		KeyLen:    32,
 	}
 
 	ECIES_AES256_SHA384 = &ECIESParams{
-		Hash:      sha512.New384,
-		hashAlgo:  crypto.SHA384,
+		Hash:      sha3.New384,
+		hashAlgo:  crypto.SHA3_384,
 		Cipher:    aes.NewCipher,
 		BlockSize: aes.BlockSize,
 		KeyLen:    32,
 	}
 
 	ECIES_AES256_SHA512 = &ECIESParams{
-		Hash:      sha512.New,
-		hashAlgo:  crypto.SHA512,
+		Hash:      sha3.New512,
+		hashAlgo:  crypto.SHA3_512,
 		Cipher:    aes.NewCipher,
 		BlockSize: aes.BlockSize,
 		KeyLen:    32,

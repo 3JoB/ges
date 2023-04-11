@@ -2,7 +2,7 @@ package ecc
 
 import (
 	"crypto/ecdsa"
-	"crypto/rand"
+	rand "lukechampine.com/frand"
 	"crypto/x509"
 	"encoding/base64"
 	"runtime"
@@ -17,7 +17,7 @@ func init() {
 }
 
 // The public key and plaintext are passed in for encryption
-func eccEncrypt(plainText, pubKey []byte) (cipherText []byte, err error) {
+func encrypt(plainText, pubKey []byte) (cipherText []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -41,7 +41,7 @@ func eccEncrypt(plainText, pubKey []byte) (cipherText []byte, err error) {
 }
 
 // The private key and plaintext are passed in for decryption
-func eccDecrypt(cipherText, priKey []byte) (msg []byte, err error) {
+func decrypt(cipherText, priKey []byte) (msg []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -66,19 +66,19 @@ func eccDecrypt(cipherText, priKey []byte) (msg []byte, err error) {
 	return plainText, nil
 }
 
-func EccEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText string, err error) {
+func EncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText string, err error) {
 	pub, err := base64.StdEncoding.DecodeString(base64PubKey)
 	if err != nil {
 		return "", err
 	}
-	cipherBytes, err := eccEncrypt(plainText, pub)
+	cipherBytes, err := encrypt(plainText, pub)
 	if err != nil {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(cipherBytes), nil
 }
 
-func EccDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
+func DecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
 	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
 		return nil, err
@@ -87,22 +87,22 @@ func EccDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte
 	if err != nil {
 		return nil, err
 	}
-	return eccDecrypt(cipherTextBytes, privateBytes)
+	return decrypt(cipherTextBytes, privateBytes)
 }
 
-func EccEncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
+func EncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
 	pub, err := hex.DecodeString(hexPubKey)
 	if err != nil {
 		return "", err
 	}
-	cipherBytes, err := eccEncrypt(plainText, pub)
+	cipherBytes, err := encrypt(plainText, pub)
 	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(cipherBytes), nil
 }
 
-func EccDecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
+func DecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
 	privateBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
 		return nil, err
@@ -111,5 +111,5 @@ func EccDecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err err
 	if err != nil {
 		return nil, err
 	}
-	return eccDecrypt(cipherTextBytes, privateBytes)
+	return decrypt(cipherTextBytes, privateBytes)
 }

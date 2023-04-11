@@ -13,7 +13,7 @@ import (
 	rand "lukechampine.com/frand"
 )
 
-func rsaSign(msg, priKey []byte) (sign []byte, err error) {
+func sign(msg, priKey []byte) (sign []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -32,7 +32,7 @@ func rsaSign(msg, priKey []byte) (sign []byte, err error) {
 	return sign, nil
 }
 
-func rsaVerifySign(msg, sign, pubKey []byte) bool {
+func verifySign(msg, sign, pubKey []byte) bool {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -52,19 +52,19 @@ func rsaVerifySign(msg, sign, pubKey []byte) bool {
 	return result == nil
 }
 
-func RsaSignBase64(msg []byte, base64PriKey string) (base64Sign string, err error) {
+func SignBase64(msg []byte, base64PriKey string) (base64Sign string, err error) {
 	priBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
 		return "", err
 	}
-	sign, err := rsaSign(msg, priBytes)
+	sign, err := sign(msg, priBytes)
 	if err != nil {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(sign), nil
 }
 
-func RsaVerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
+func VerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
 	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
 		return false
@@ -73,22 +73,22 @@ func RsaVerifySignBase64(msg []byte, base64Sign, base64PubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign(msg, signBytes, pubBytes)
+	return verifySign(msg, signBytes, pubBytes)
 }
 
-func RsaSignHex(msg []byte, hexPriKey string) (hexSign string, err error) {
+func SignHex(msg []byte, hexPriKey string) (hexSign string, err error) {
 	priBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
 		return "", err
 	}
-	sign, err := rsaSign(msg, priBytes)
+	sign, err := sign(msg, priBytes)
 	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(sign), nil
 }
 
-func RsaVerifySignHex(msg []byte, hexSign, hexPubKey string) bool {
+func VerifySignHex(msg []byte, hexSign, hexPubKey string) bool {
 	signBytes, err := hex.DecodeString(hexSign)
 	if err != nil {
 		return false
@@ -97,5 +97,5 @@ func RsaVerifySignHex(msg []byte, hexSign, hexPubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return rsaVerifySign(msg, signBytes, pubBytes)
+	return verifySign(msg, signBytes, pubBytes)
 }

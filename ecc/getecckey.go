@@ -3,7 +3,7 @@ package ecc
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"crypto/rand"
+	rand "lukechampine.com/frand"
 	"crypto/x509"
 	"encoding/base64"
 
@@ -15,7 +15,7 @@ type EccKey struct {
 	PublicKey  string
 }
 
-func GenerateEccKeyHex() (EccKey, error) {
+func GenerateKeyHex() (EccKey, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return EccKey{}, err
@@ -35,7 +35,7 @@ func GenerateEccKeyHex() (EccKey, error) {
 	}, nil
 }
 
-func GenerateEccKeyBase64() (EccKey, error) {
+func GenerateKeyBase64() (EccKey, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return EccKey{}, err

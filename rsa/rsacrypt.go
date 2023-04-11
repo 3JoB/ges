@@ -5,9 +5,9 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/hex"
 	"runtime"
 
+	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
 	rand "lukechampine.com/frand"
 )
@@ -20,7 +20,7 @@ func init() {
 	log.SetReportCaller(true)
 }
 
-func rsaEncrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
+func encrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -64,7 +64,7 @@ func rsaEncrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
 	return cipherText, nil
 }
 
-func rsaDecrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
+func decrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -98,19 +98,19 @@ func rsaDecrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
 	return plainText, nil
 }
 
-func RsaEncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText string, err error) {
+func EncryptToBase64(plainText []byte, base64PubKey string) (base64CipherText string, err error) {
 	pub, err := base64.StdEncoding.DecodeString(base64PubKey)
 	if err != nil {
 		return "", err
 	}
-	cipherBytes, err := rsaEncrypt(plainText, pub)
+	cipherBytes, err := encrypt(plainText, pub)
 	if err != nil {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(cipherBytes), nil
 }
 
-func RsaDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
+func DecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte, err error) {
 	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
 		return nil, err
@@ -119,22 +119,22 @@ func RsaDecryptByBase64(base64CipherText, base64PriKey string) (plainText []byte
 	if err != nil {
 		return nil, err
 	}
-	return rsaDecrypt(cipherTextBytes, privateBytes)
+	return decrypt(cipherTextBytes, privateBytes)
 }
 
-func RsaEncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
+func EncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
 	pub, err := hex.DecodeString(hexPubKey)
 	if err != nil {
 		return "", err
 	}
-	cipherBytes, err := rsaEncrypt(plainText, pub)
+	cipherBytes, err := encrypt(plainText, pub)
 	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(cipherBytes), nil
 }
 
-func RsaDecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
+func DecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
 	privateBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
 		return nil, err
@@ -143,5 +143,5 @@ func RsaDecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err err
 	if err != nil {
 		return nil, err
 	}
-	return rsaDecrypt(cipherTextBytes, privateBytes)
+	return decrypt(cipherTextBytes, privateBytes)
 }

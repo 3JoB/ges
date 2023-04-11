@@ -16,91 +16,91 @@ var (
 )
 
 func TestEccEncryptBase64(t *testing.T) {
-	base64Key, err := GenerateEccKeyBase64()
+	base64Key, err := GenerateKeyBase64()
 	assert.Nil(t, err)
 
-	cipherText, err := EccEncryptToBase64([]byte(msg), base64PubKey)
+	cipherText, err := EncryptToBase64([]byte(msg), base64PubKey)
 	assert.Nil(t, err)
-	_, err = EccEncryptToBase64([]byte(msg), base64PriKey)
+	_, err = EncryptToBase64([]byte(msg), base64PriKey)
 	assert.NotNil(t, err)
-	plainText, err := EccDecryptByBase64(cipherText, base64PriKey)
+	plainText, err := DecryptByBase64(cipherText, base64PriKey)
 	assert.Nil(t, err)
 	assert.Equal(t, msg, string(plainText))
 
-	cipherText, err = EccEncryptToBase64([]byte(msg), base64Key.PublicKey)
+	cipherText, err = EncryptToBase64([]byte(msg), base64Key.PublicKey)
 	assert.Nil(t, err)
-	plainText, err = EccDecryptByBase64(cipherText, base64Key.PrivateKey)
+	plainText, err = DecryptByBase64(cipherText, base64Key.PrivateKey)
 	assert.Nil(t, err)
 	assert.Equal(t, msg, string(plainText))
-	_, err = EccDecryptByBase64(cipherText, base64Key.PublicKey)
+	_, err = DecryptByBase64(cipherText, base64Key.PublicKey)
 	assert.NotNil(t, err)
-	_, err = EccDecryptByBase64("badText", base64Key.PrivateKey)
+	_, err = DecryptByBase64("badText", base64Key.PrivateKey)
 	assert.NotNil(t, err)
-	_, err = EccDecryptByBase64(cipherText, "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ")
+	_, err = DecryptByBase64(cipherText, "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElJ")
 	assert.NotNil(t, err)
 }
 
 func TestEccEncryptHex(t *testing.T) {
-	hexKey, err := GenerateEccKeyHex()
+	hexKey, err := GenerateKeyHex()
 	assert.Nil(t, err)
 
-	cipherText, err := EccEncryptToHex([]byte(msg), hexPubKey)
+	cipherText, err := EncryptToHex([]byte(msg), hexPubKey)
 	assert.Nil(t, err)
-	_, err = EccEncryptToHex([]byte(msg), hexPriKey)
+	_, err = EncryptToHex([]byte(msg), hexPriKey)
 	assert.NotNil(t, err)
-	plainText, err := EccDecryptByHex(cipherText, hexPriKey)
+	plainText, err := DecryptByHex(cipherText, hexPriKey)
 	assert.Nil(t, err)
 	assert.Equal(t, msg, string(plainText))
 
-	cipherText, err = EccEncryptToHex([]byte(msg), hexKey.PublicKey)
+	cipherText, err = EncryptToHex([]byte(msg), hexKey.PublicKey)
 	assert.Nil(t, err)
-	plainText, err = EccDecryptByHex(cipherText, hexKey.PrivateKey)
+	plainText, err = DecryptByHex(cipherText, hexKey.PrivateKey)
 	assert.Nil(t, err)
 	assert.Equal(t, msg, string(plainText))
-	_, err = EccDecryptByHex(cipherText, hexKey.PublicKey)
+	_, err = DecryptByHex(cipherText, hexKey.PublicKey)
 	assert.NotNil(t, err)
-	_, err = EccDecryptByHex("badText", hexKey.PrivateKey)
+	_, err = DecryptByHex("badText", hexKey.PrivateKey)
 	assert.NotNil(t, err)
-	_, err = EccDecryptByHex(cipherText, "3059301306072a8648ce3d020106082a8648ce3d03")
+	_, err = DecryptByHex(cipherText, "3059301306072a8648ce3d020106082a8648ce3d03")
 	assert.NotNil(t, err)
 }
 
-func TestEccSignBase64(t *testing.T) {
-	base64Key, err := GenerateEccKeyBase64()
+func TestSignBase64(t *testing.T) {
+	base64Key, err := GenerateKeyBase64()
 	assert.Nil(t, err)
 
-	rText, sText, err := EccSignBase64([]byte(msg), base64Key.PrivateKey)
+	rText, sText, err := SignBase64([]byte(msg), base64Key.PrivateKey)
 	assert.Nil(t, err)
-	_, _, err = EccSignBase64([]byte(msg), base64Key.PublicKey)
+	_, _, err = SignBase64([]byte(msg), base64Key.PublicKey)
 	assert.NotNil(t, err)
-	_, _, err = EccSignBase64([]byte(msg), base64PubKey)
+	_, _, err = SignBase64([]byte(msg), base64PubKey)
 	assert.NotNil(t, err)
 
-	res := EccVerifySignBase64([]byte(msg), rText, sText, base64Key.PublicKey)
+	res := VerifySignBase64([]byte(msg), rText, sText, base64Key.PublicKey)
 	assert.Equal(t, res, true)
 
-	res = EccVerifySignBase64([]byte(msg), rText, sText, base64Key.PrivateKey)
+	res = VerifySignBase64([]byte(msg), rText, sText, base64Key.PrivateKey)
 	assert.Equal(t, res, false)
-	res = EccVerifySignBase64([]byte(msg), sText, rText, base64Key.PrivateKey)
+	res = VerifySignBase64([]byte(msg), sText, rText, base64Key.PrivateKey)
 	assert.Equal(t, res, false)
 }
 
-func TestEccSignHex(t *testing.T) {
-	hexKey, err := GenerateEccKeyHex()
+func TestSignHex(t *testing.T) {
+	hexKey, err := GenerateKeyHex()
 	assert.Nil(t, err)
 
-	rText, sText, err := EccSignHex([]byte(msg), hexKey.PrivateKey)
+	rText, sText, err := SignHex([]byte(msg), hexKey.PrivateKey)
 	assert.Nil(t, err)
-	_, _, err = EccSignHex([]byte(msg), hexKey.PublicKey)
+	_, _, err = SignHex([]byte(msg), hexKey.PublicKey)
 	assert.NotNil(t, err)
-	_, _, err = EccSignHex([]byte(msg), hexPubKey)
+	_, _, err = SignHex([]byte(msg), hexPubKey)
 	assert.NotNil(t, err)
 
-	res := EccVerifySignHex([]byte(msg), rText, sText, hexKey.PublicKey)
+	res := VerifySignHex([]byte(msg), rText, sText, hexKey.PublicKey)
 	assert.Equal(t, res, true)
 
-	res = EccVerifySignHex([]byte(msg), rText, sText, hexKey.PrivateKey)
+	res = VerifySignHex([]byte(msg), rText, sText, hexKey.PrivateKey)
 	assert.Equal(t, res, false)
-	res = EccVerifySignHex([]byte(msg), sText, rText, hexKey.PrivateKey)
+	res = VerifySignHex([]byte(msg), sText, rText, hexKey.PrivateKey)
 	assert.Equal(t, res, false)
 }

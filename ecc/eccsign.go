@@ -2,7 +2,7 @@ package ecc
 
 import (
 	"crypto/ecdsa"
-	"crypto/rand"
+	rand "lukechampine.com/frand"
 	"crypto/x509"
 	"encoding/base64"
 	"math/big"
@@ -11,10 +11,10 @@ import (
 	"github.com/3JoB/ulib/hex"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/3JoB/ges/hash"
+	"github.com/3JoB/ulib/crypt/hash"
 )
 
-func eccSign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) {
+func sign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -29,7 +29,7 @@ func eccSign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	resultHash := hash.Sha256(msg)
+	resultHash := hash.SHA256(msg).Sum(nil)
 	r, s, err := ecdsa.Sign(rand.Reader, privateKey, resultHash)
 	if err != nil {
 		return nil, nil, err
@@ -46,7 +46,7 @@ func eccSign(msg []byte, priKey []byte) (rSign []byte, sSign []byte, err error) 
 	return rText, sText, nil
 }
 
-func eccVerifySign(msg []byte, pubKey []byte, rText, sText []byte) bool {
+func verifySign(msg []byte, pubKey []byte, rText, sText []byte) bool {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
@@ -59,7 +59,7 @@ func eccVerifySign(msg []byte, pubKey []byte, rText, sText []byte) bool {
 	}()
 	publicKeyInterface, _ := x509.ParsePKIXPublicKey(pubKey)
 	publicKey := publicKeyInterface.(*ecdsa.PublicKey)
-	resultHash := hash.Sha256(msg)
+	resultHash := hash.SHA256(msg).Sum(nil)
 
 	var r, s big.Int
 	r.UnmarshalText(rText)
@@ -68,19 +68,19 @@ func eccVerifySign(msg []byte, pubKey []byte, rText, sText []byte) bool {
 	return result
 }
 
-func EccSignBase64(msg []byte, base64PriKey string) (base64rSign, base64sSign string, err error) {
+func SignBase64(msg []byte, base64PriKey string) (base64rSign, base64sSign string, err error) {
 	priBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
 	if err != nil {
 		return "", "", err
 	}
-	rSign, sSign, err := eccSign(msg, priBytes)
+	rSign, sSign, err := sign(msg, priBytes)
 	if err != nil {
 		return "", "", err
 	}
 	return base64.StdEncoding.EncodeToString(rSign), base64.StdEncoding.EncodeToString(sSign), nil
 }
 
-func EccVerifySignBase64(msg []byte, base64rSign, base64sSign, base64PubKey string) bool {
+func VerifySignBase64(msg []byte, base64rSign, base64sSign, base64PubKey string) bool {
 	rSignBytes, err := base64.StdEncoding.DecodeString(base64rSign)
 	if err != nil {
 		return false
@@ -93,22 +93,22 @@ func EccVerifySignBase64(msg []byte, base64rSign, base64sSign, base64PubKey stri
 	if err != nil {
 		return false
 	}
-	return eccVerifySign(msg, pubBytes, rSignBytes, sSignBytes)
+	return verifySign(msg, pubBytes, rSignBytes, sSignBytes)
 }
 
-func EccSignHex(msg []byte, hexPriKey string) (hexrSign, hexsSign string, err error) {
+func SignHex(msg []byte, hexPriKey string) (hexrSign, hexsSign string, err error) {
 	priBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
 		return "", "", err
 	}
-	rSign, sSign, err := eccSign(msg, priBytes)
+	rSign, sSign, err := sign(msg, priBytes)
 	if err != nil {
 		return "", "", err
 	}
 	return hex.EncodeToString(rSign), hex.EncodeToString(sSign), nil
 }
 
-func EccVerifySignHex(msg []byte, hexrSign, hexsSign, hexPubKey string) bool {
+func VerifySignHex(msg []byte, hexrSign, hexsSign, hexPubKey string) bool {
 	rSignBytes, err := hex.DecodeString(hexrSign)
 	if err != nil {
 		return false
@@ -121,5 +121,5 @@ func EccVerifySignHex(msg []byte, hexrSign, hexsSign, hexPubKey string) bool {
 	if err != nil {
 		return false
 	}
-	return eccVerifySign(msg, pubBytes, rSignBytes, sSignBytes)
+	return verifySign(msg, pubBytes, rSignBytes, sSignBytes)
 }
